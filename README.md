@@ -32,7 +32,7 @@ The first release deliberately uses a simple lexical retrieval baseline. It is l
 python -m venv .venv
 
 # Windows PowerShell
-.venv\\Scripts\\Activate.ps1
+.venv\Scripts\Activate.ps1
 
 # macOS/Linux
 source .venv/bin/activate
