@@ -1,4 +1,5 @@
 import pytest
+
 from localrag import Document, chunk_documents
 
 
