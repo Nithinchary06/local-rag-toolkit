@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+
 from .generators import OllamaGenerator
 from .pipeline import LocalRAG
 
