@@ -6,7 +6,7 @@ Thank you for considering a contribution. Small, focused contributions are espec
 
 ```bash
 python -m venv .venv
-# Windows PowerShell: .venv\\Scripts\\Activate.ps1
+# Windows PowerShell: .venv\Scripts\Activate.ps1
 # macOS/Linux: source .venv/bin/activate
 python -m pip install --upgrade pip
 pip install -e ".[dev]"
