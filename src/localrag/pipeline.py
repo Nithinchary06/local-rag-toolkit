@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from typing import Protocol
+
 from .chunking import chunk_documents
 from .generators import build_prompt
 from .loaders import load_documents
