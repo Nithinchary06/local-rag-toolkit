@@ -1,6 +1,7 @@
 """Load text, Markdown, and PDF files into Document objects."""
 
 from pathlib import Path
+
 from .models import Document
 
 SUPPORTED_EXTENSIONS = {".txt", ".md", ".markdown", ".pdf"}
