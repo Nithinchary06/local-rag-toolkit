@@ -1,6 +1,7 @@
 """Run with: python examples/basic_usage.py ./knowledge"""
 
 import sys
+
 from localrag import LocalRAG
 
 if len(sys.argv) != 2:
