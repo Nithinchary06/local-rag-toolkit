@@ -5,6 +5,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 from .models import Chunk, SearchResult
+from .store import SQLiteVectorStore
 
 
 class TfidfRetriever:
@@ -50,6 +51,9 @@ class SentenceTransformerRetriever:
         *,
         model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
         model=None,
+        store: SQLiteVectorStore | None = None,
+        index_name: str = "default",
+        signature: str | None = None,
     ) -> None:
         if not chunks:
             raise ValueError("At least one chunk is required to build the index")
@@ -65,13 +69,30 @@ class SentenceTransformerRetriever:
 
         self.chunks = chunks
         self.model = model
-        embeddings = self.model.encode(
-            [chunk.text for chunk in chunks],
-            convert_to_numpy=True,
-            normalize_embeddings=True,
-            show_progress_bar=False,
+        cached = (
+            store.load(index_name, signature)
+            if store is not None and signature is not None
+            else None
         )
-        self.embeddings = np.asarray(embeddings, dtype=np.float32)
+        if cached is not None:
+            cached_chunks, self.embeddings = cached
+            self.chunks = cached_chunks
+        else:
+            embeddings = self.model.encode(
+                [chunk.text for chunk in chunks],
+                convert_to_numpy=True,
+                normalize_embeddings=True,
+                show_progress_bar=False,
+            )
+            self.embeddings = np.asarray(embeddings, dtype=np.float32)
+            if store is not None and signature is not None:
+                store.save(
+                    index_name,
+                    signature,
+                    model_name,
+                    self.chunks,
+                    self.embeddings,
+                )
 
     def search(self, query: str, *, top_k: int = 4) -> list[SearchResult]:
         """Return chunks ranked by cosine similarity in embedding space."""
