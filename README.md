@@ -51,9 +51,14 @@ TF-IDF is the lightweight default. To use semantic retrieval, install the option
 
 ```bash
 localrag search ./knowledge "How can I travel by automobile?" --retriever semantic
+
+# Choose where semantic embeddings are cached (default: .localrag/index.sqlite3)
+localrag search ./knowledge "How can I travel by automobile?" --retriever semantic --index-path ./.localrag/index.sqlite3
 ```
 
 The default model is `sentence-transformers/all-MiniLM-L6-v2`. It is downloaded on first use and then runs locally. Select another Sentence Transformers model or local model directory with `--embedding-model`.
+
+Semantic document embeddings are cached in a local SQLite database at `.localrag/index.sqlite3` by default. Repeated runs reuse the cached vectors when the source content, chunk settings, and embedding model are unchanged. If documents change, LocalRAG rebuilds the affected index automatically. The `.localrag/` directory is excluded from Git.
 
 ### Add your documents
 
@@ -138,7 +143,7 @@ Documents (TXT / Markdown / PDF)
 
 - TF-IDF is lexical retrieval and may miss conceptually related passages that use different words. Use the optional semantic retriever for meaning-based matching.
 - Scanned PDFs need OCR before their contents can be indexed.
-- The initial version builds an in-memory index each time the CLI runs; persistent storage is not implemented yet.
+- Semantic embeddings are persisted in a local SQLite cache. TF-IDF indexes are still built in memory for each process.
 - Ollama must be installed and running locally for answer generation.
 - Generated answers can still be incorrect. Review the cited source passages for important decisions.
 
