@@ -158,7 +158,8 @@ ruff check .
 ## Roadmap
 
 - [x] Add optional embedding-based semantic retrieval.
-- [ ] Add persistent vector storage and reusable embedding indexes.
+- [x] Add persistent SQLite storage for semantic embeddings.
+- [ ] Add incremental indexing and reusable indexes across chunking/model migrations.
 - [ ] Add chunking strategies and metadata filters.
 - [ ] Improve PDF handling and add OCR integration as an optional extra.
 - [ ] Add evaluation datasets and retrieval metrics.
