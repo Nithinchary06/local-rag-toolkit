@@ -6,7 +6,7 @@
 
 LocalRAG loads TXT, Markdown, and PDF files, splits them into source-aware chunks, retrieves relevant passages with TF-IDF, and can optionally generate answers with a locally running [Ollama](https://ollama.com/) model.
 
-The first release deliberately uses a simple lexical retrieval baseline. It is lightweight, easy to inspect, and provides a clean interface for adding embedding-based retrievers later.
+LocalRAG offers a lightweight TF-IDF baseline and an optional semantic retriever powered by Sentence Transformers.
 
 ## Features
 
@@ -14,7 +14,8 @@ The first release deliberately uses a simple lexical retrieval baseline. It is l
 - Process directories recursively.
 - Preserve source paths and PDF page numbers for traceability.
 - Configurable word-based chunking and overlap.
-- Retrieve passages using TF-IDF and cosine similarity.
+- Retrieve passages using TF-IDF or semantic sentence embeddings.
+- Keep semantic embedding dependencies optional; models run locally.
 - Optional grounded answer generation through Ollama.
 - Command-line interface and Python API.
 - No hosted API key required.
@@ -39,7 +40,20 @@ source .venv/bin/activate
 
 python -m pip install --upgrade pip
 pip install -e .
+
+# Optional: local semantic embedding support
+pip install -e '.[semantic]'
 ```
+
+### Choose a retrieval backend
+
+TF-IDF is the lightweight default. To use semantic retrieval, install the optional extra above and run:
+
+```bash
+localrag search ./knowledge "How can I travel by automobile?" --retriever semantic
+```
+
+The default model is `sentence-transformers/all-MiniLM-L6-v2`. It is downloaded on first use and then runs locally. Select another Sentence Transformers model or local model directory with `--embedding-model`.
 
 ### Add your documents
 
@@ -122,7 +136,7 @@ Documents (TXT / Markdown / PDF)
 
 ## Current scope and limitations
 
-- TF-IDF is lexical retrieval, not semantic embedding search. It may miss conceptually related passages that use different words.
+- TF-IDF is lexical retrieval and may miss conceptually related passages that use different words. Use the optional semantic retriever for meaning-based matching.
 - Scanned PDFs need OCR before their contents can be indexed.
 - The initial version builds an in-memory index each time the CLI runs; persistent storage is not implemented yet.
 - Ollama must be installed and running locally for answer generation.
@@ -138,8 +152,8 @@ ruff check .
 
 ## Roadmap
 
-- [ ] Add embedding-based semantic retrieval.
-- [ ] Add persistent vector storage.
+- [x] Add optional embedding-based semantic retrieval.
+- [ ] Add persistent vector storage and reusable embedding indexes.
 - [ ] Add chunking strategies and metadata filters.
 - [ ] Improve PDF handling and add OCR integration as an optional extra.
 - [ ] Add evaluation datasets and retrieval metrics.
