@@ -18,3 +18,6 @@ Thumbs.db
 knowledge/
 *.sqlite3
 *.index
+
+# Local semantic embedding cache
+.localrag/
