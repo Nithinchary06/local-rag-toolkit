@@ -20,6 +20,11 @@ def _add_retrieval_options(parser: argparse.ArgumentParser) -> None:
         help="sentence-transformers model name or local path for semantic retrieval",
     )
     parser.add_argument("--top-k", type=int, default=4)
+    parser.add_argument(
+        "--index-path",
+        default=".localrag/index.sqlite3",
+        help="SQLite file used to cache semantic document embeddings",
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -55,6 +60,7 @@ def main() -> None:
             args.path,
             retriever=args.retriever,
             embedding_model=args.embedding_model,
+            index_path=args.index_path,
         )
         if args.command == "search":
             results = rag.retrieve(args.question, top_k=args.top_k)
