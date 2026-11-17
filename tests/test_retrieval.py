@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from localrag import Chunk, SentenceTransformerRetriever, TfidfRetriever
+from localrag.store import SQLiteVectorStore
 
 
 def test_retriever_ranks_relevant_chunk_first():
@@ -53,3 +54,37 @@ def test_semantic_retriever_validates_query():
 
     with pytest.raises(ValueError):
         retriever.search(" ")
+
+
+
+def test_semantic_retriever_reuses_persisted_document_embeddings(tmp_path):
+    class CountingModel(FakeEmbeddingModel):
+        def __init__(self):
+            self.encoded_batches = []
+
+        def encode(self, texts, **kwargs):
+            self.encoded_batches.append(list(texts))
+            return super().encode(texts, **kwargs)
+
+    chunks = [Chunk("A vehicle travels on roads.", "vehicle.txt", 0)]
+    model = CountingModel()
+    store = SQLiteVectorStore(tmp_path / "index.sqlite3")
+
+    first = SentenceTransformerRetriever(
+        chunks,
+        model=model,
+        store=store,
+        index_name="test-documents",
+        signature="same-content",
+    )
+    assert len(model.encoded_batches) == 1
+
+    second = SentenceTransformerRetriever(
+        chunks,
+        model=model,
+        store=store,
+        index_name="test-documents",
+        signature="same-content",
+    )
+    assert len(model.encoded_batches) == 1
+    assert second.chunks[0].text == first.chunks[0].text
